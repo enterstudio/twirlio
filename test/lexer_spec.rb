@@ -60,5 +60,21 @@ describe Lexer do
     ]
   end
 
+  it "should lex a welcome instruction" do
+
+    code = "(welcome \"welcome to foo\")"
+    tokens = @lexer.tokenize code
+    tokens.must_equal [
+      [:PAREN,"("],
+      [:IDEN, "welcome"],
+      [:STRING, "welcome to foo"],
+      [:PAREN,")"],
+    ]
+  end
+
+  it "should lex the empty program" do
+    @lexer.tokenize("").must_equal []
+  end
+
 
 end

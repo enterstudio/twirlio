@@ -19,6 +19,9 @@ class Lexer
       elsif string = chunk[/\A".+"/]
         tokens << [:STRING, string.gsub("\"","")]
         i += string.size
+      elsif string = chunk[/\A'.+'/]
+        tokens << [:STRING, string.gsub("\'","")]
+        i += string.size
       # skip spaces
       elsif chunk.match(/\A /)
         i += 1
