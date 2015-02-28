@@ -1,0 +1,19 @@
+(send 'Cuantas categorias de producto tiene')
+(read categorias)
+(send 'Cual es la categoria con mas productos')
+(read popcategory)
+(send 'Cuantos productos hay en #{popcategory}')
+(if (> popcategory 5)
+  (send 'ud va a tener un descuento')
+  (send 'chao'))
+
+
+
+
+
+
+
+
+
+
+

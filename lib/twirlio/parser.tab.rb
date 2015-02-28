@@ -12,7 +12,7 @@ require 'racc/parser.rb'
 
 class Parser < Racc::Parser
 
-module_eval(<<'...end parser.y/module_eval...', 'parser.y', 30)
+module_eval(<<'...end parser.y/module_eval...', 'parser.y', 43)
 
   def parse(code, show_tokens=false)
     @tokens = Lexer.new.tokenize(code) # Tokenize the code using our lexer
@@ -28,55 +28,80 @@ module_eval(<<'...end parser.y/module_eval...', 'parser.y', 30)
 ##### State transition tables begin ###
 
 racc_action_table = [
-    11,    12,     6,     7,     2,     9,    10,     5,     7,    13,
-    14,    15 ]
+    19,    22,     7,     8,    10,     9,    17,    18,     6,     7,
+     8,    10,     9,    14,    12,     7,     8,    10,     9,    12,
+    31,    29,    30,    13,    20,    21,    15,    25,    26,    12,
+    22,     2,     5,    32,    33,    34,    35,    36 ]
 
 racc_action_check = [
-     7,     7,     2,     2,     0,     3,     5,     1,     9,    11,
-    12,    13 ]
+    10,    16,     2,     2,     2,     2,     9,    10,     2,    22,
+    22,    22,    22,     7,    22,    12,    12,    12,    12,    27,
+    27,    25,    25,     5,    14,    15,     8,    17,    19,     3,
+    23,     0,     1,    28,    29,    30,    33,    34 ]
 
 racc_action_pointer = [
-     2,     7,     0,     3,   nil,     6,   nil,    -3,   nil,     5,
-   nil,     5,     8,     9,   nil,   nil ]
+    22,    32,    -2,    20,   nil,    23,   nil,    10,    24,    -3,
+    -3,   nil,    11,   nil,    14,    15,    -8,    19,   nil,    18,
+   nil,   nil,     5,    21,   nil,    19,   nil,    10,    23,    31,
+    33,   nil,   nil,    26,    27,   nil,   nil ]
 
 racc_action_default = [
-    -1,    -8,    -8,    -3,    -4,    -8,    -2,    -8,    -5,    -8,
-    16,    -8,    -8,    -8,    -7,    -6 ]
+    -1,   -15,   -15,    -3,    -4,   -15,    -2,   -15,   -15,   -15,
+   -15,    -5,   -15,    37,   -15,   -15,   -15,   -15,    -9,   -15,
+    -6,    -7,   -15,   -15,   -12,   -15,   -10,   -15,   -15,   -15,
+   -15,   -11,    -8,   -15,   -15,   -13,   -14 ]
 
 racc_goto_table = [
-     4,     3,     1,     8 ]
+    11,     3,    23,    16,     1,   nil,   nil,   nil,   nil,    28,
+   nil,   nil,   nil,    24,   nil,   nil,   nil,   nil,   nil,   nil,
+    24,   nil,   nil,    27,    11 ]
 
 racc_goto_check = [
-     3,     2,     1,     3 ]
+     3,     2,     5,     4,     1,   nil,   nil,   nil,   nil,     5,
+   nil,   nil,   nil,     3,   nil,   nil,   nil,   nil,   nil,   nil,
+     3,   nil,   nil,     2,     3 ]
 
 racc_goto_pointer = [
-   nil,     2,     1,     0 ]
+   nil,     4,     1,    -3,    -6,   -14 ]
 
 racc_goto_default = [
-   nil,   nil,   nil,   nil ]
+   nil,   nil,   nil,     4,   nil,   nil ]
 
 racc_reduce_table = [
   0, 0, :racc_error,
-  0, 6, :_reduce_1,
-  2, 6, :_reduce_2,
-  1, 6, :_reduce_3,
-  1, 7, :_reduce_4,
-  2, 7, :_reduce_5,
-  5, 8, :_reduce_6,
-  4, 8, :_reduce_7 ]
+  0, 12, :_reduce_1,
+  2, 12, :_reduce_2,
+  1, 12, :_reduce_3,
+  1, 13, :_reduce_4,
+  2, 13, :_reduce_5,
+  4, 14, :_reduce_6,
+  4, 14, :_reduce_7,
+  6, 14, :_reduce_8,
+  3, 14, :_reduce_9,
+  4, 14, :_reduce_10,
+  3, 16, :_reduce_11,
+  1, 16, :_reduce_12,
+  5, 15, :_reduce_13,
+  5, 15, :_reduce_14 ]
 
-racc_reduce_n = 8
+racc_reduce_n = 15
 
-racc_shift_n = 16
+racc_shift_n = 37
 
 racc_token_table = {
   false => 0,
   :error => 1,
-  :PAREN => 2,
-  :IDEN => 3,
-  :STRING => 4 }
+  :IDEN => 2,
+  :STRING => 3,
+  :SEND => 4,
+  :READ => 5,
+  :EXIT => 6,
+  :IF => 7,
+  :COMPARATOR => 8,
+  "(" => 9,
+  ")" => 10 }
 
-racc_nt_base = 5
+racc_nt_base = 11
 
 racc_use_result_var = true
 
@@ -99,13 +124,21 @@ Racc_arg = [
 Racc_token_to_s_table = [
   "$end",
   "error",
-  "PAREN",
   "IDEN",
   "STRING",
+  "SEND",
+  "READ",
+  "EXIT",
+  "IF",
+  "COMPARATOR",
+  "\"(\"",
+  "\")\"",
   "$start",
   "program",
   "expressions",
-  "expression" ]
+  "expression",
+  "condition",
+  "block" ]
 
 Racc_debug_parser = false
 
@@ -113,51 +146,100 @@ Racc_debug_parser = false
 
 # reduce 0 omitted
 
-module_eval(<<'.,.,', 'parser.y', 10)
+module_eval(<<'.,.,', 'parser.y', 14)
   def _reduce_1(val, _values, result)
      result = Nodes.new([]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 11)
+module_eval(<<'.,.,', 'parser.y', 15)
   def _reduce_2(val, _values, result)
      result = Nodes.new([]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 12)
+module_eval(<<'.,.,', 'parser.y', 16)
   def _reduce_3(val, _values, result)
      result = Nodes.new val[0] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 15)
+module_eval(<<'.,.,', 'parser.y', 19)
   def _reduce_4(val, _values, result)
      result = val 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 16)
+module_eval(<<'.,.,', 'parser.y', 20)
   def _reduce_5(val, _values, result)
      result = val[0] << val[1] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 19)
+module_eval(<<'.,.,', 'parser.y', 23)
   def _reduce_6(val, _values, result)
-     result = StepNode.new val[2], val[3] 
+     result = SendNode.new val[2] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'parser.y', 20)
+module_eval(<<'.,.,', 'parser.y', 24)
   def _reduce_7(val, _values, result)
-     result = WelcomeNode.new val[2] 
+     result = ReadNode.new val[2] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 25)
+  def _reduce_8(val, _values, result)
+     result = ComparatorNode.new val[2], val[3] , val[4] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 26)
+  def _reduce_9(val, _values, result)
+     result = ExitNode.new '' 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 27)
+  def _reduce_10(val, _values, result)
+     result = ExitNode.new val[2] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 30)
+  def _reduce_11(val, _values, result)
+     result = val[1] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 31)
+  def _reduce_12(val, _values, result)
+     result = [val[0]] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 33)
+  def _reduce_13(val, _values, result)
+     result = ConditionNode.new val[1], val[2], val[3] 
+    result
+  end
+.,.,
+
+module_eval(<<'.,.,', 'parser.y', 34)
+  def _reduce_14(val, _values, result)
+     result = ConditionNode.new val[1], val[3], val[2] 
     result
   end
 .,.,

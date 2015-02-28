@@ -2,14 +2,18 @@
 
 class Parser
 
-  token PAREN
   token IDEN
   token STRING
+  token SEND
+  token READ
+  token EXIT
+  token IF
+  token COMPARATOR
 
 rule
 
   program           : /* nothing */ { result = Nodes.new([]) }
-                    | PAREN PAREN   { result = Nodes.new([]) }
+                    | '(' ')'   { result = Nodes.new([]) }
                     | expressions   { result = Nodes.new val[0] }
                     ;
 
@@ -17,9 +21,18 @@ rule
                     | expressions expression { result = val[0] << val[1] }
                     ;
 
-  expression        : PAREN IDEN IDEN STRING PAREN { result = StepNode.new val[2], val[3] }
-                    | PAREN IDEN STRING PAREN { result = WelcomeNode.new val[2] }
+  expression        : '(' SEND STRING ')' { result = SendNode.new val[2] }
+                    | '(' READ IDEN ')' { result = ReadNode.new val[2] }
+                    | '(' IF condition block block ')' { result = ComparatorNode.new val[2], val[3] , val[4] }
+                    | '(' EXIT ')' { result = ExitNode.new '' }
+                    | '(' EXIT STRING ')' { result = ExitNode.new val[2] }
                     ;
+
+  block             : '(' expressions ')' { result = val[1] }
+                    | expression { result = [val[0]] }
+
+  condition         : '(' COMPARATOR IDEN STRING ')' { result = ConditionNode.new val[1], val[2], val[3] }
+  condition         : '(' COMPARATOR STRING IDEN ')' { result = ConditionNode.new val[1], val[3], val[2] }
 
 ---- header
 

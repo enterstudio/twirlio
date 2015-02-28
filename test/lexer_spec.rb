@@ -10,70 +10,86 @@ describe Lexer do
 
   it "should lex left parens" do
     tokens = @lexer.tokenize "("
-    tokens.must_equal [[:PAREN, "("]]
+    tokens.must_equal [["(", "("]]
   end
 
   it "should lex right parens" do
     tokens = @lexer.tokenize ")"
-    tokens.must_equal [[:PAREN, ")"]]
+    tokens.must_equal [[")", ")"]]
   end
 
   it "should lex parens group" do
     tokens = @lexer.tokenize "()"
-    tokens.must_equal [[:PAREN, "(" ], [:PAREN, ")"]]
+    tokens.must_equal [["(", "(" ], [")", ")"]]
   end
 
   it "should lex parens with identifier" do
     tokens = @lexer.tokenize "foo("
     tokens.must_equal [
       [:IDEN, "foo"],
-      [:PAREN, "("]
+      ["(", "("]
     ]
   end
 
-  it "should lex a full parens struct" do
-    tokens = @lexer.tokenize "(welcome foo )"
+  it 'should accept underscored identifiers' do
+    tokens = @lexer.tokenize "foo_bar_baz zoo_ba_boo("
     tokens.must_equal [
-      [:PAREN,"("],
-      [:IDEN, "welcome"],
-      [:IDEN, "foo"],
-      [:PAREN,")"]
-    ]
-  end
-
-  it "should match simple strings" do
-    tokens = @lexer.tokenize "\"foo bar baz\""
-    tokens.must_equal [[:STRING, "foo bar baz"]]
-  end
-
-  it "should lex a full example" do
-    tokens = @lexer.tokenize "(welcome foo )\n(vab \"some string\")"
-    tokens.must_equal [
-      [:PAREN,"("],
-      [:IDEN, "welcome"],
-      [:IDEN, "foo"],
-      [:PAREN,")"],
-      [:PAREN,"("],
-      [:IDEN, "vab"],
-      [:STRING, "some string"],
-      [:PAREN,")"],
-    ]
-  end
-
-  it "should lex a welcome instruction" do
-
-    code = "(welcome \"welcome to foo\")"
-    tokens = @lexer.tokenize code
-    tokens.must_equal [
-      [:PAREN,"("],
-      [:IDEN, "welcome"],
-      [:STRING, "welcome to foo"],
-      [:PAREN,")"],
+      [:IDEN, "foo_bar_baz"],
+      [:IDEN, "zoo_ba_boo"],
+      ["(", "("]
     ]
   end
 
   it "should lex the empty program" do
     @lexer.tokenize("").must_equal []
+  end
+
+  it 'should lex the "if" program' do
+    code = """
+      (if (= foo 'bar')
+    """
+    tokens = @lexer.tokenize(code)
+    tokens.must_equal [
+      ['(','('],
+      [:IF,'if'],
+      ['(','('],
+      [:COMPARATOR, '='],
+      [:IDEN, 'foo'],
+      [:STRING, 'bar'],
+      [')',')']
+    ]
+  end
+
+  it 'should lex a full prog' do
+    code = """
+      (send 'Hi, welcome to the survey, please enter your name')
+      (read name)
+      (send 'Hi {{name}}, please enter M for male or F for female')
+      (read gender)
+      (send 'Hi {{name}}, it appears your gender is {{gender}}')
+      (if (= name 'foo')
+        (send 'hi foo')
+        (send 'your name is not foo'))
+    """
+    tokens = @lexer.tokenize(code)
+    must_match_tokens(tokens,
+                      '(', :SEND, :STRING, ')',
+                      '(', :READ, :IDEN, ')',
+                      '(', :SEND, :STRING, ')',
+                      '(', :READ, :IDEN, ')',
+                      '(', :SEND, :STRING, ')',
+                      '(', :IF, '(', :COMPARATOR, :IDEN, :STRING, ')',
+                      '(', :SEND, :STRING, ')',
+                      '(', :SEND, :STRING, ')',')')
+
+  end
+
+
+  def must_match_tokens(tokens, *args)
+    tokens.size.must_equal args.size
+    tokens.each_with_index do |token, index|
+      token[0].must_equal(args[index])
+    end
   end
 
 
