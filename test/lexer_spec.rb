@@ -7,6 +7,20 @@ describe Lexer do
     @lexer = Lexer.new
   end
 
+  it "should ignore comments" do
+    tokens = @lexer.tokenize("# (send foo) foobar bar\n")
+    tokens.must_equal []
+  end
+
+  it "should ignore inlined comments" do
+    tokens = @lexer.tokenize "(read foo) # wait for an SMS to arrive and store it in foo"
+    tokens.must_equal [
+      ['(','('],
+      [:READ, 'read'],
+      [:IDEN, 'foo'],
+      [')',')']
+    ]
+  end
 
   it "should lex left parens" do
     tokens = @lexer.tokenize "("
