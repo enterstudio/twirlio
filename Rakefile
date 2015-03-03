@@ -17,8 +17,8 @@ Jeweler::Tasks.new do |gem|
   gem.name = "twirlio"
   gem.homepage = "http://github.com/fhur/twirlio"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{simple language to describe SMS interfaces}
+  gem.description = %Q{simple language to describe SMS interfaces}
   gem.email = "fhurtado@twilio.com"
   gem.authors = ["fhur"]
   # dependencies defined in Gemfile
