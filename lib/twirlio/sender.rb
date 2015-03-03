@@ -23,8 +23,8 @@ class TwilioSender < Sender
 
   def say(message)
     @client.account.messages.create(
-      :from => from,
-      :to => to,
+      :from => @from,
+      :to => @to,
       :body => message
     )
   end
